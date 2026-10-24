@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: crimevision-ai-backend
+    env: python
+    region: oregon
+    plan: starter
+    rootDir: backend
+    buildCommand: "pip install --upgrade pip && pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: AI_MODE
+        value: GROQ
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "https://crimevision-ai.vercel.app,http://localhost:5173"
+      - key: DATABASE_URL
+        value: "sqlite:///./data/crimevision.db"
+    disk:
+      name: evidence-storage
+      mountPath: /opt/render/project/src/backend/storage
+      sizeGB: 10
